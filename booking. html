@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Session - Zenaa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0f1e;
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+        form {
+            background: #16213e;
+            max-width: 500px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 20px;
+        }
+        input, button {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 30px;
+            border: none;
+            font-size: 16px;
+        }
+        button {
+            background: #25D366;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>📝 Book Your Gaming Session</h2>
+    <form id="bookingForm">
+        <input type="text" id="name" placeholder="Your Name" required>
+        <input type="tel" id="mobile" placeholder="Mobile Number (e.g. 024XXXXXXX)" required>
+        <input type="datetime-local" id="datetime" required>
+        <button type="submit">Submit & Proceed to Payment</button>
+    </form>
+
+    <script>
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let name = document.getElementById('name').value;
+            let mobile = document.getElementById('mobile').value;
+            let datetime = document.getElementById('datetime').value;
+
+            // WhatsApp message
+            let message = `New Booking:%0A%0AName: ${name}%0AMobile: ${mobile}%0ADate & Time: ${datetime}`;
+            let whatsappUrl = `https://wa.me/2330240058049?text=${message}`;
+
+            // Store data temporarily to pass to payment page
+            localStorage.setItem('zenagBooking', JSON.stringify({ name, mobile, datetime }));
+
+            // Open WhatsApp
+            window.open(whatsappUrl, '_blank');
+
+            // Then go to payment page
+            window.location.href = 'payment.html';
+        });
+    </script>
+</body>
+</html>
