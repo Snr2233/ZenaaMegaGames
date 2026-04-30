@@ -203,6 +203,96 @@
             100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
         }
 
+        /* Discount Bar */
+        .discount-bar {
+            background: linear-gradient(135deg, #00aa44, #008833);
+            border-radius: 60px;
+            padding: 1rem 2rem;
+            margin: 2rem 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border: 2px solid #00ff66;
+            box-shadow: 0 0 20px rgba(0, 255, 100, 0.3);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .discount-bar:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0 30px rgba(0, 255, 100, 0.5);
+        }
+
+        .discount-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .discount-bar-left i {
+            font-size: 2.5rem;
+            color: gold;
+        }
+
+        .discount-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .discount-code {
+            background: #1a2a1a;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-family: monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #00ff88;
+            border: 1px solid #00ff66;
+        }
+
+        .redeem-btn {
+            background: gold;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #1a1a2a;
+        }
+
+        /* Modal for discount redemption */
+        .discount-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .discount-modal-box {
+            background: #0a1424;
+            border: 2px solid cyan;
+            border-radius: 48px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .discount-modal-box input {
+            margin: 1rem 0;
+        }
+
         .btn {
             background: linear-gradient(95deg, #0a1f2a, #03111c);
             border: 1.5px solid #0ff;
@@ -218,6 +308,7 @@
         .btn-gold { border-color: #f5b042; color: #ffeaaf; }
         .btn-danger { border-color: #ff4444; color: #ffaaaa; }
         .btn-success { border-color: #00ff88; color: #aaffdd; }
+        .btn-green { background: #00aa44; border-color: #00ff66; color: white; }
         .btn:hover { transform: scale(1.02); background: #0ff115; color: #03050b; }
 
         input, select {
@@ -305,10 +396,26 @@
             color: gold;
         }
 
+        .code-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .code-item {
+            background: rgba(0, 50, 50, 0.5);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
         @media (max-width: 700px) {
             .brand { font-size: 2rem; }
             .dashboard { flex-direction: column; text-align: center; }
             .form-row { flex-direction: column; }
+            .discount-bar { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
@@ -324,6 +431,7 @@
         <a onclick="showSection('home')">🏠 Home</a>
         <a onclick="showSection('about')">📖 About</a>
         <a onclick="showSection('booking')">📅 Book Now</a>
+        <a onclick="showSection('discounts')">🎁 Discounts</a>
         <a onclick="showSection('contact')">📞 Contact</a>
     </div>
 </div>
@@ -337,6 +445,8 @@
     </div>
     <p style="text-align: center; font-size: 1.2rem;">Where Champions Play | Ultimate Gaming Experience</p>
 
+    <!-- Discount Bar (Above Footer) - Will be moved via JS to above footer -->
+    
     <!-- Friday Special Banner -->
     <div class="friday-banner">
         <i class="fas fa-calendar-alt"></i> <strong>EVERY FRIDAY</strong> 🔥 First 20 minutes FREE! + Great music, snacks & epic vibes!
@@ -426,6 +536,7 @@
             <div class="form-group"><label>Full Name</label><input type="text" id="fullName" required></div>
             <div class="form-group"><label>Mobile (e.g., 024XXXXXXX)</label><input type="tel" id="mobileNum" required></div>
             <div class="form-group"><label>Email</label><input type="email" id="emailAddr" required></div>
+            <div class="form-group"><label>Customer ID (for discount claims)</label><input type="text" id="customerId" placeholder="Will be generated for you"></div>
             
             <div class="form-row">
                 <div class="form-group">
@@ -485,6 +596,11 @@
                 </div>
             </div>
             
+            <div class="form-group">
+                <label>Discount Code (Optional)</label>
+                <input type="text" id="discountCode" placeholder="Enter discount code if you have one">
+            </div>
+            
             <div class="price-display" id="priceDisplay">Total: 12 GHS</div>
             
             <div class="flex-btns">
@@ -495,25 +611,94 @@
     </div>
 </div>
 
+<!-- Discounts Section (Customer View) -->
+<div id="discountsSection" style="display: none;">
+    <div class="card">
+        <h2>🎁 Claim Your Discount</h2>
+        <p>Have a discount code? Enter it below with your Customer ID to claim your offer!</p>
+        
+        <div class="form-group">
+            <label>Customer ID</label>
+            <input type="text" id="claimCustomerId" placeholder="Enter your Customer ID">
+        </div>
+        <div class="form-group">
+            <label>Discount Code</label>
+            <input type="text" id="claimCode" placeholder="Enter discount code">
+        </div>
+        <button class="btn btn-success" onclick="claimDiscount()">🎁 Claim Discount</button>
+        
+        <div id="claimResult" style="margin-top: 20px;"></div>
+    </div>
+    
+    <div class="card">
+        <h3>💰 Your Active Discounts</h3>
+        <div id="myDiscounts"></div>
+    </div>
+</div>
+
 <!-- Admin Dashboard -->
 <div id="adminSection" style="display: none;">
     <div class="card">
         <div class="admin-header">
-            <h2 style="margin:0;">📊 Admin Dashboard — All Bookings</h2>
+            <h2 style="margin:0;">📊 Admin Dashboard</h2>
             <button class="btn btn-danger" onclick="logoutAdmin()">🚪 Logout</button>
         </div>
+        
+        <!-- Tabs -->
         <div class="flex-btns">
-            <button class="btn" onclick="exportToExcel()">📎 Export to Excel</button>
-            <button class="btn btn-danger" onclick="clearAllBookings()">⚠️ Clear All Bookings</button>
-            <button class="btn btn-success" onclick="loadBookingsFromCloud()">🔄 Refresh from Cloud</button>
+            <button class="btn" onclick="showAdminTab('bookings')">📅 Bookings</button>
+            <button class="btn btn-gold" onclick="showAdminTab('codes')">🎁 Generate Codes</button>
+            <button class="btn btn-success" onclick="showAdminTab('redeemed')">✅ Redeemed Codes</button>
         </div>
-        <div style="overflow-x: auto; margin-top: 20px;">
-            <table id="bookingsTable">
-                <thead>
-                    <tr><th>Name</th><th>Mobile</th><th>Email</th><th>Console</th><th>Game</th><th>Players</th><th>Date</th><th>Time</th><th>Hours</th><th>Total</th><th>Status</th></tr>
-                </thead>
-                <tbody id="bookingsTbody"></tbody>
-            </table>
+        
+        <!-- Bookings Tab -->
+        <div id="adminBookingsTab">
+            <div class="flex-btns">
+                <button class="btn" onclick="exportToExcel()">📎 Export to Excel</button>
+                <button class="btn btn-danger" onclick="clearAllBookings()">⚠️ Clear All Bookings</button>
+                <button class="btn btn-success" onclick="loadBookingsFromCloud()">🔄 Refresh</button>
+            </div>
+            <div style="overflow-x: auto; margin-top: 20px;">
+                <table>
+                    <thead>
+                        <tr><th>Name</th><th>Mobile</th><th>Email</th><th>Customer ID</th><th>Console</th><th>Game</th><th>Date</th><th>Time</th><th>Hours</th><th>Total</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="bookingsTbody"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Generate Codes Tab -->
+        <div id="adminCodesTab" style="display: none;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Discount Amount (GHS)</label>
+                    <input type="number" id="discountAmount" placeholder="e.g., 5, 10, 20">
+                </div>
+                <div class="form-group">
+                    <label>Valid Until (Date)</label>
+                    <input type="date" id="validUntil">
+                </div>
+                <div class="form-group">
+                    <label>Quantity to Generate</label>
+                    <input type="number" id="codeQuantity" value="1" min="1" max="50">
+                </div>
+            </div>
+            <button class="btn btn-gold" onclick="generateDiscountCodes()">🎁 Generate Codes</button>
+            
+            <h3 style="margin-top: 2rem;">📋 Generated Codes</h3>
+            <div id="generatedCodesList" class="code-list"></div>
+        </div>
+        
+        <!-- Redeemed Codes Tab -->
+        <div id="adminRedeemedTab" style="display: none;">
+            <h3>✅ Claimed Discounts</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead><tr><th>Code</th><th>Amount</th><th>Claimed By (Customer ID)</th><th>Claimed Date</th><th>Status</th></tr></thead>
+                    <tbody id="redeemedTbody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -530,18 +715,233 @@
     </div>
 </div>
 
-<footer>© 2026 Zenaa Mega Game Centre — Where Champions Play. POWERED BY WISETECH DIGITALS</footer>
+<!-- Discount Bar (will be moved to above footer) -->
+<div id="discountBarContainer">
+    <div class="discount-bar" onclick="showDiscountModal()">
+        <div class="discount-bar-left">
+            <i class="fas fa-gift"></i>
+            <div class="discount-text">
+                🎁 <strong>CLAIM YOUR DISCOUNT!</strong> 🎁<br>
+                Have a discount code? Click here to redeem!
+            </div>
+        </div>
+        <div class="discount-code">
+            <i class="fas fa-tag"></i> REDEEM NOW
+        </div>
+        <button class="redeem-btn">Claim →</button>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 Zenaa Mega Game Centre — Where Champions Play</p>
+    <p style="margin-top: 8px; font-size: 0.8rem; color: #88aacc;">Made with <i class="fas fa-heart" style="color: #ff3366;"></i> by Wistech Solutions</p>
+</footer>
 
 <script>
-    // ========== JSONbin CONFIGURATION (YOUR CREDENTIALS) ==========
+    // ========== JSONbin CONFIGURATION ==========
     const JSONBIN_BIN_ID = "69f37b0d856a6821898f591b";
     const JSONBIN_API_KEY = "$2a$10$.VP0XiXfoY.gdKmiyFeZs.czh6VBV2JwKI940VAqMhhV1cnsiOEv6";
     
     // ========== GLOBAL VARIABLES ==========
     let bookings = [];
+    let discountCodes = []; // { code, amount, validUntil, generatedBy, createdAt }
+    let redeemedCodes = []; // { code, amount, claimedByCustomerId, claimedAt }
     let isAdminLoggedIn = false;
+    let currentAdminTab = 'bookings';
     
-    // ========== GENERATE DATE & TIME DROPDOWNS ==========
+    // ========== LOAD ALL DATA FROM JSONBIN ==========
+    async function loadAllData() {
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_API_KEY }
+            });
+            const data = await response.json();
+            if (data.record) {
+                bookings = data.record.bookings || [];
+                discountCodes = data.record.discountCodes || [];
+                redeemedCodes = data.record.redeemedCodes || [];
+            }
+            return true;
+        } catch (error) {
+            console.error("Failed to load:", error);
+            return false;
+        }
+    }
+    
+    // ========== SAVE ALL DATA TO JSONBIN ==========
+    async function saveAllData() {
+        try {
+            await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_API_KEY
+                },
+                body: JSON.stringify({ 
+                    bookings: bookings, 
+                    discountCodes: discountCodes,
+                    redeemedCodes: redeemedCodes 
+                })
+            });
+            return true;
+        } catch (error) {
+            console.error("Failed to save:", error);
+            return false;
+        }
+    }
+    
+    // ========== GENERATE UNIQUE CUSTOMER ID ==========
+    function generateCustomerId() {
+        return 'ZEN' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 4).toUpperCase();
+    }
+    
+    // ========== GENERATE DISCOUNT CODES (ADMIN) ==========
+    async function generateDiscountCodes() {
+        let amount = document.getElementById('discountAmount').value;
+        let validUntil = document.getElementById('validUntil').value;
+        let quantity = parseInt(document.getElementById('codeQuantity').value) || 1;
+        
+        if (!amount || amount <= 0) {
+            alert("Please enter a valid discount amount.");
+            return;
+        }
+        
+        if (!validUntil) {
+            alert("Please select a valid until date.");
+            return;
+        }
+        
+        for (let i = 0; i < quantity; i++) {
+            let code = 'DISC' + Date.now() + Math.random().toString(36).substr(2, 6).toUpperCase();
+            discountCodes.push({
+                code: code,
+                amount: parseInt(amount),
+                validUntil: validUntil,
+                generatedBy: "admin",
+                createdAt: new Date().toISOString(),
+                isRedeemed: false
+            });
+        }
+        
+        await saveAllData();
+        displayGeneratedCodes();
+        alert(`${quantity} discount code(s) generated successfully!`);
+        document.getElementById('discountAmount').value = '';
+        document.getElementById('validUntil').value = '';
+        document.getElementById('codeQuantity').value = '1';
+    }
+    
+    function displayGeneratedCodes() {
+        let container = document.getElementById('generatedCodesList');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        let activeCodes = discountCodes.filter(c => !c.isRedeemed);
+        
+        if (activeCodes.length === 0) {
+            container.innerHTML = '<p>No active codes. Generate some above.</p>';
+            return;
+        }
+        
+        activeCodes.forEach(c => {
+            let div = document.createElement('div');
+            div.className = 'code-item';
+            div.innerHTML = `
+                <span><strong>${c.code}</strong></span>
+                <span>💰 ${c.amount} GHS off</span>
+                <span>📅 Valid until: ${c.validUntil}</span>
+                <button class="btn" style="padding: 5px 12px; font-size: 0.8rem;" onclick="copyToClipboard('${c.code}')">📋 Copy</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text);
+        alert("Code copied: " + text);
+    }
+    
+    // ========== CUSTOMER CLAIM DISCOUNT ==========
+    async function claimDiscount() {
+        let customerId = document.getElementById('claimCustomerId').value.trim();
+        let code = document.getElementById('claimCode').value.trim().toUpperCase();
+        let resultDiv = document.getElementById('claimResult');
+        
+        if (!customerId || !code) {
+            resultDiv.innerHTML = '<div class="alert">❌ Please enter both Customer ID and Discount Code.</div>';
+            return;
+        }
+        
+        await loadAllData();
+        
+        // Find the code
+        let codeIndex = discountCodes.findIndex(c => c.code === code && !c.isRedeemed);
+        
+        if (codeIndex === -1) {
+            resultDiv.innerHTML = '<div class="alert">❌ Invalid or already redeemed discount code.</div>';
+            return;
+        }
+        
+        let discount = discountCodes[codeIndex];
+        
+        // Check if expired
+        if (new Date(discount.validUntil) < new Date()) {
+            resultDiv.innerHTML = '<div class="alert">❌ This discount code has expired.</div>';
+            return;
+        }
+        
+        // Mark as redeemed
+        discountCodes[codeIndex].isRedeemed = true;
+        
+        // Add to redeemed codes
+        redeemedCodes.push({
+            code: code,
+            amount: discount.amount,
+            claimedByCustomerId: customerId,
+            claimedAt: new Date().toISOString(),
+            status: "Redeemed"
+        });
+        
+        await saveAllData();
+        
+        resultDiv.innerHTML = `<div class="alert success-alert">✅ Success! You've claimed ${discount.amount} GHS off your next booking! Present this at the centre.</div>`;
+        document.getElementById('claimCustomerId').value = '';
+        document.getElementById('claimCode').value = '';
+        
+        // Refresh displays
+        if (isAdminLoggedIn) {
+            displayRedeemedCodes();
+            displayGeneratedCodes();
+        }
+        loadUserDiscounts(customerId);
+    }
+    
+    async function loadUserDiscounts(customerId) {
+        let container = document.getElementById('myDiscounts');
+        if (!container) return;
+        
+        await loadAllData();
+        let myRedeemed = redeemedCodes.filter(r => r.claimedByCustomerId === customerId);
+        
+        if (myRedeemed.length === 0) {
+            container.innerHTML = '<p>No discounts claimed yet.</p>';
+            return;
+        }
+        
+        container.innerHTML = '<div class="code-list">';
+        myRedeemed.forEach(r => {
+            container.innerHTML += `
+                <div class="code-item">
+                    <span>🎁 ${r.code}</span>
+                    <span>💰 ${r.amount} GHS off</span>
+                    <span>📅 Claimed: ${new Date(r.claimedAt).toLocaleDateString()}</span>
+                </div>
+            `;
+        });
+        container.innerHTML += '</div>';
+    }
+    
+    // ========== BOOKING FUNCTIONS ==========
     function generateDateOptions() {
         const dateSelect = document.getElementById('dateSelect');
         if (!dateSelect) return;
@@ -549,18 +949,15 @@
         const today = new Date();
         dateSelect.innerHTML = '';
         
-        for (let i = 0; i < 120; i++) { // Next 120 days
+        for (let i = 0; i < 60; i++) {
             const date = new Date(today);
             date.setDate(today.getDate() + i);
-            
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
             const dateString = `${year}-${month}-${day}`;
-            
             const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
             const displayDate = date.toLocaleDateString('en-US', options);
-            
             const option = document.createElement('option');
             option.value = dateString;
             option.textContent = displayDate;
@@ -571,15 +968,8 @@
     function generateTimeOptions() {
         const timeSelect = document.getElementById('timeSelect');
         if (!timeSelect) return;
-        
         timeSelect.innerHTML = '';
-        
-        // Opening hours: 10 AM to 12 AM (midnight)
-        const times = [
-            "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00",
-            "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"
-        ];
-        
+        const times = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
         times.forEach(time => {
             const option = document.createElement('option');
             option.value = time;
@@ -591,103 +981,50 @@
         });
     }
     
-    // ========== PRICE CALCULATION ==========
     function updatePrice() {
         let consoleType = document.getElementById('consoleType').value;
         let players = parseInt(document.getElementById('playerCount').value);
         let hours = parseInt(document.getElementById('duration').value);
-        
         let hourlyRate = (consoleType === 'ps5') ? 12 : 8;
         let total = hourlyRate * players * hours;
-        
         document.getElementById('priceDisplay').innerHTML = `Total: ${total} GHS (${hourlyRate} GHS/hr × ${players} player(s) × ${hours} hr(s))`;
         return total;
     }
     
-    // ========== LOAD BOOKINGS FROM JSONBIN ==========
-    async function loadBookingsFromCloud() {
-        try {
-            const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': JSONBIN_API_KEY }
-            });
-            const data = await response.json();
-            if (data.record && data.record.bookings) {
-                bookings = data.record.bookings;
-            } else {
-                bookings = [];
-            }
-            if (document.getElementById('adminSection') && document.getElementById('adminSection').style.display !== 'none') {
-                renderAdminTable();
-            }
-            return bookings;
-        } catch (error) {
-            console.error("Failed to load from JSONbin:", error);
-            bookings = [];
-            return [];
-        }
-    }
-    
-    // ========== SAVE BOOKINGS TO JSONBIN ==========
-    async function saveBookingsToCloud() {
-        try {
-            const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': JSONBIN_API_KEY
-                },
-                body: JSON.stringify({ bookings: bookings })
-            });
-            return true;
-        } catch (error) {
-            console.error("Failed to save to JSONbin:", error);
-            return false;
-        }
-    }
-    
-    // ========== CHECK CONFLICT ==========
     function isSlotTaken(consoleType, dateValue, timeValue) {
-        const dateTimeString = `${dateValue} ${timeValue}`;
         return bookings.some(b => b.console === consoleType && b.date === dateValue && b.time === timeValue);
     }
     
-    // ========== SEND WHATSAPP ==========
-    function sendWhatsAppMessage(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total) {
+    function sendWhatsAppMessage(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total, customerId) {
         let consoleName = consoleType === 'ps5' ? 'PS5' : 'PS4';
-        let msg = `🎮 *ZENAA BOOKING CONFIRMED* 🎮%0A%0A👤 ${name}%0A📞 ${mobile}%0A📧 ${email}%0A🎮 Console: ${consoleName}%0A🎮 Game: ${game}%0A👥 Players: ${players}%0A📅 Date: ${dateValue}%0A⏰ Time: ${timeValue}%0A⏱️ ${hours} hour(s)%0A💰 Total: ${total} GHS%0A📍 51 Appiah Street%0A🎉 Payment at centre. See you soon!`;
+        let msg = `🎮 *ZENAA BOOKING CONFIRMED* 🎮%0A%0A👤 ${name}%0A🆔 Customer ID: ${customerId}%0A📞 ${mobile}%0A📧 ${email}%0A🎮 Console: ${consoleName}%0A🎮 Game: ${game}%0A👥 Players: ${players}%0A📅 Date: ${dateValue}%0A⏰ Time: ${timeValue}%0A⏱️ ${hours} hour(s)%0A💰 Total: ${total} GHS%0A📍 51 Appiah Street%0A🎉 Payment at centre. See you soon!`;
         let url = `https://wa.me/2330240058049?text=${msg}`;
         window.open(url, '_blank');
     }
     
-    // ========== SEND EMAIL ==========
-    function sendEmailConfirmation(name, email, consoleType, game, players, dateValue, timeValue, hours, total) {
+    function sendEmailConfirmation(name, email, consoleType, game, players, dateValue, timeValue, hours, total, customerId) {
         let consoleName = consoleType === 'ps5' ? 'PS5' : 'PS4';
         let subject = `Zenaa Gaming Confirmation - ${name}`;
-        let body = `Hi ${name},\n\nYour gaming session at Zenaa Mega Game Centre is confirmed!\n\nDetails:\nConsole: ${consoleName}\nGame: ${game}\nPlayers: ${players}\nDate: ${dateValue}\nTime: ${timeValue}\nDuration: ${hours} hour(s)\nTotal: ${total} GHS\n\nLocation: 51 Appiah Street, Accra\nPayment at centre.\n\nSee you soon!\n\n- Zenaa Team`;
+        let body = `Hi ${name},\n\nYour gaming session at Zenaa Mega Game Centre is confirmed!\n\nCustomer ID: ${customerId}\nConsole: ${consoleName}\nGame: ${game}\nPlayers: ${players}\nDate: ${dateValue}\nTime: ${timeValue}\nDuration: ${hours} hour(s)\nTotal: ${total} GHS\n\nLocation: 51 Appiah Street, Accra\nPayment at centre.\n\nSee you soon!\n\n- Zenaa Team`;
         window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     }
     
-    // ========== FINALIZE BOOKING ==========
-    async function finalizeBooking(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total) {
+    async function finalizeBooking(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total, customerId) {
         let newBooking = {
             id: Date.now(),
             timestamp: new Date().toISOString(),
-            name, mobile, email,
-            console: consoleType,
-            game: game,
-            players: players,
-            date: dateValue,
-            time: timeValue,
-            hours: hours,
-            totalPrice: total,
+            name, mobile, email, customerId,
+            console: consoleType, game, players,
+            date: dateValue, time: timeValue,
+            hours: hours, totalPrice: total,
             status: "Confirmed"
         };
         
         bookings.push(newBooking);
-        await saveBookingsToCloud();
+        await saveAllData();
         
-        sendWhatsAppMessage(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total);
-        sendEmailConfirmation(name, email, consoleType, game, players, dateValue, timeValue, hours, total);
+        sendWhatsAppMessage(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total, customerId);
+        sendEmailConfirmation(name, email, consoleType, game, players, dateValue, timeValue, hours, total, customerId);
         
         document.getElementById('successAlert').style.display = 'block';
         setTimeout(() => { document.getElementById('successAlert').style.display = 'none'; }, 5000);
@@ -697,10 +1034,12 @@
         generateTimeOptions();
         updatePrice();
         
+        // Set the customer ID field
+        document.getElementById('customerId').value = customerId;
+        
         if (isAdminLoggedIn) renderAdminTable();
     }
     
-    // ========== CHECK AND BOOK ==========
     async function checkAndBook() {
         let name = document.getElementById('fullName').value.trim();
         let mobile = document.getElementById('mobileNum').value.trim();
@@ -711,13 +1050,14 @@
         let dateValue = document.getElementById('dateSelect').value;
         let timeValue = document.getElementById('timeSelect').value;
         let hours = parseInt(document.getElementById('duration').value);
+        let discountCode = document.getElementById('discountCode').value.trim().toUpperCase();
         
         if (!name || !mobile || !email || !dateValue || !timeValue) {
             alert("Please fill all fields.");
             return;
         }
         
-        await loadBookingsFromCloud();
+        await loadAllData();
         
         if (isSlotTaken(consoleType, dateValue, timeValue)) {
             document.getElementById('conflictAlert').style.display = 'block';
@@ -729,8 +1069,32 @@
         
         let hourlyRate = (consoleType === 'ps5') ? 12 : 8;
         let total = hourlyRate * players * hours;
+        let discountAmount = 0;
         
-        await finalizeBooking(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total);
+        // Apply discount if code exists and is valid
+        if (discountCode) {
+            let validCode = discountCodes.find(c => c.code === discountCode && !c.isRedeemed && new Date(c.validUntil) >= new Date());
+            if (validCode) {
+                discountAmount = validCode.amount;
+                total = Math.max(0, total - discountAmount);
+                // Mark code as redeemed
+                validCode.isRedeemed = true;
+                redeemedCodes.push({
+                    code: discountCode,
+                    amount: discountAmount,
+                    claimedByCustomerId: "booking_" + name,
+                    claimedAt: new Date().toISOString(),
+                    status: "Used in booking"
+                });
+                await saveAllData();
+                alert(`🎉 Discount applied! You saved ${discountAmount} GHS. New total: ${total} GHS`);
+            } else {
+                alert("Invalid or expired discount code.");
+            }
+        }
+        
+        let customerId = generateCustomerId();
+        await finalizeBooking(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total, customerId);
     }
     
     // ========== ADMIN FUNCTIONS ==========
@@ -742,20 +1106,44 @@
             let consoleName = b.console === 'ps5' ? 'PS5' : 'PS4';
             let row = `<tr>
                 <td>${b.name}</td><td>${b.mobile}</td><td>${b.email}</td>
-                <td>${consoleName}</td><td>${b.game || 'Not specified'}</td>
-                <td>${b.players}</td>
+                <td>${b.customerId || 'N/A'}</td>
+                <td>${consoleName}</td><td>${b.game || '-'}</td>
                 <td>${b.date}</td><td>${b.time}</td>
-                <td>${b.hours}</td>
-                <td>${b.totalPrice} GHS</td><td>✅ Booked</td>
+                <td>${b.hours}</td><td>${b.totalPrice} GHS</td><td>✅ Booked</td>
             </tr>`;
             tbody.innerHTML += row;
         });
     }
     
+    function displayRedeemedCodes() {
+        let tbody = document.getElementById('redeemedTbody');
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        redeemedCodes.forEach(r => {
+            let row = `<tr>
+                <td>${r.code}</td><td>${r.amount} GHS</td>
+                <td>${r.claimedByCustomerId}</td>
+                <td>${new Date(r.claimedAt).toLocaleString()}</td>
+                <td>✅ Claimed</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+    
+    function showAdminTab(tab) {
+        currentAdminTab = tab;
+        document.getElementById('adminBookingsTab').style.display = tab === 'bookings' ? 'block' : 'none';
+        document.getElementById('adminCodesTab').style.display = tab === 'codes' ? 'block' : 'none';
+        document.getElementById('adminRedeemedTab').style.display = tab === 'redeemed' ? 'block' : 'none';
+        
+        if (tab === 'codes') displayGeneratedCodes();
+        if (tab === 'redeemed') displayRedeemedCodes();
+    }
+    
     function exportToExcel() {
-        let wsData = [["Timestamp","Name","Mobile","Email","Console","Game","Players","Date","Time","Hours","Total Price"]];
+        let wsData = [["Timestamp","Name","Mobile","Email","Customer ID","Console","Game","Players","Date","Time","Hours","Total Price"]];
         bookings.forEach(b => {
-            wsData.push([b.timestamp, b.name, b.mobile, b.email, b.console, b.game || '', b.players, b.date, b.time, b.hours, b.totalPrice]);
+            wsData.push([b.timestamp, b.name, b.mobile, b.email, b.customerId || '', b.console, b.game || '', b.players, b.date, b.time, b.hours, b.totalPrice]);
         });
         let ws = XLSX.utils.aoa_to_sheet(wsData);
         let wb = XLSX.utils.book_new();
@@ -766,10 +1154,17 @@
     async function clearAllBookings() {
         if (confirm("⚠️ Delete ALL bookings permanently? Cannot be undone.")) {
             bookings = [];
-            await saveBookingsToCloud();
+            await saveAllData();
             renderAdminTable();
-            alert("All bookings cleared from cloud.");
+            alert("All bookings cleared.");
         }
+    }
+    
+    // ========== DISCOUNT MODAL ==========
+    function showDiscountModal() {
+        document.getElementById('discountsSection').style.display = 'block';
+        showSection('discounts');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
     // ========== TRIPLE TAP ADMIN ACCESS ==========
@@ -796,7 +1191,7 @@
             <div class="password-box">
                 <h3 style="color:cyan;">🔐 Admin Access</h3>
                 <input type="password" id="adminPassInput" placeholder="Enter password" autocomplete="off">
-                <div class="flex-btns" style="margin-top:15px;">
+                <div class="flex-btns">
                     <button class="btn" id="submitPasswordBtn">Submit</button>
                     <button class="btn" id="closeModalBtn">Cancel</button>
                 </div>
@@ -808,9 +1203,11 @@
             if (pass === "admin123") {
                 modal.remove();
                 isAdminLoggedIn = true;
-                await loadBookingsFromCloud();
+                await loadAllData();
                 showSection('admin');
                 renderAdminTable();
+                displayGeneratedCodes();
+                displayRedeemedCodes();
             } else { alert("❌ Wrong password!"); modal.remove(); }
         };
         document.getElementById('closeModalBtn').onclick = () => modal.remove();
@@ -828,21 +1225,29 @@
             alert("Please triple-tap on 'ZENAA' logo to access admin panel.");
             return;
         }
-        let sections = ['homeSection', 'aboutSection', 'bookingSection', 'adminSection', 'contactSection'];
+        let sections = ['homeSection', 'aboutSection', 'bookingSection', 'discountsSection', 'adminSection', 'contactSection'];
         sections.forEach(sec => {
             let el = document.getElementById(sec);
             if (el) el.style.display = 'none';
         });
         if (section === 'home') document.getElementById('homeSection').style.display = 'block';
         if (section === 'about') document.getElementById('aboutSection').style.display = 'block';
-        if (section === 'booking') document.getElementById('bookingSection').style.display = 'block';
-        if (section === 'admin' && isAdminLoggedIn) document.getElementById('adminSection').style.display = 'block';
-        if (section === 'contact') document.getElementById('contactSection').style.display = 'block';
-        
-        // Refresh dropdowns when booking section is shown
         if (section === 'booking') {
+            document.getElementById('bookingSection').style.display = 'block';
             generateDateOptions();
             generateTimeOptions();
+            document.getElementById('customerId').value = generateCustomerId();
+        }
+        if (section === 'discounts') document.getElementById('discountsSection').style.display = 'block';
+        if (section === 'admin' && isAdminLoggedIn) document.getElementById('adminSection').style.display = 'block';
+        if (section === 'contact') document.getElementById('contactSection').style.display = 'block';
+    }
+    
+    // Set customer ID on booking page load
+    function setCustomerIdOnBooking() {
+        let customerIdField = document.getElementById('customerId');
+        if (customerIdField && !customerIdField.value) {
+            customerIdField.value = generateCustomerId();
         }
     }
     
@@ -855,8 +1260,17 @@
     generateDateOptions();
     generateTimeOptions();
     showSection('home');
-    loadBookingsFromCloud();
+    loadAllData();
     updatePrice();
+    setCustomerIdOnBooking();
+    
+    // Watch for booking section display
+    const observer = new MutationObserver(() => {
+        if (document.getElementById('bookingSection').style.display !== 'none') {
+            setCustomerIdOnBooking();
+        }
+    });
+    observer.observe(document.getElementById('bookingSection'), { attributes: true });
 </script>
 </body>
 </html>
