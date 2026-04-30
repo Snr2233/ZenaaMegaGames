@@ -47,11 +47,24 @@
         }
 
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
-            text-shadow: 0 0 8px cyan;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             cursor: pointer;
             user-select: none;
+            background: linear-gradient(135deg, #ffd966, #ffaa33);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: gold;
+            text-shadow: 0 0 10px cyan;
         }
 
         .nav-links {
@@ -89,6 +102,17 @@
             animation: pulseGlow 2.5s infinite alternate;
             cursor: pointer;
             user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .brand i {
+            font-size: 3rem;
+            color: gold;
+            filter: drop-shadow(0 0 10px cyan);
         }
 
         @keyframes pulseGlow {
@@ -128,6 +152,12 @@
             padding: 0.7rem 1.8rem;
             border: 1px solid #ffd966;
             font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .game-badge:hover {
+            transform: scale(1.05);
+            border-color: cyan;
         }
 
         .price-table {
@@ -144,6 +174,12 @@
             padding: 1rem 2rem;
             text-align: center;
             border: 1px solid gold;
+            transition: 0.2s;
+        }
+
+        .price-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
         }
 
         .price-card h3 {
@@ -195,6 +231,17 @@
         }
 
         .form-group { margin-bottom: 1.2rem; }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
 
         table {
             width: 100%;
@@ -261,13 +308,18 @@
         @media (max-width: 700px) {
             .brand { font-size: 2rem; }
             .dashboard { flex-direction: column; text-align: center; }
+            .form-row { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
 <div class="dashboard">
-    <div class="logo" id="hiddenTapTrigger">🎮 ZENAA</div>
+    <div class="logo" id="hiddenTapTrigger">
+        <i class="fas fa-crown"></i>
+        <span>ZENAA</span>
+        <i class="fas fa-gamepad"></i>
+    </div>
     <div class="nav-links">
         <a onclick="showSection('home')">🏠 Home</a>
         <a onclick="showSection('about')">📖 About</a>
@@ -277,7 +329,12 @@
 </div>
 
 <div class="container" id="homeSection">
-    <h1 class="brand glow-cyan" id="brandTripleTap">ZENAA <span class="glow-gold">MEGA GAME CENTRE</span></h1>
+    <div class="brand" id="brandTripleTap">
+        <i class="fas fa-crown"></i>
+        <span class="glow-cyan">ZENAA</span>
+        <span class="glow-gold">MEGA GAME CENTRE</span>
+        <i class="fas fa-gamepad"></i>
+    </div>
     <p style="text-align: center; font-size: 1.2rem;">Where Champions Play | Ultimate Gaming Experience</p>
 
     <!-- Friday Special Banner -->
@@ -370,31 +427,62 @@
             <div class="form-group"><label>Mobile (e.g., 024XXXXXXX)</label><input type="tel" id="mobileNum" required></div>
             <div class="form-group"><label>Email</label><input type="email" id="emailAddr" required></div>
             
-            <div class="form-group">
-                <label>Select Console</label>
-                <select id="consoleType" onchange="updatePrice()">
-                    <option value="ps5">PS5 - 12 GHS/hour (1 player) / 24 GHS/hour (2 players)</option>
-                    <option value="ps4">PS4 - 8 GHS/hour (1 player) / 16 GHS/hour (2 players)</option>
-                </select>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Select Console</label>
+                    <select id="consoleType" onchange="updatePrice()">
+                        <option value="ps5">PS5 - 12 GHS/hour (1 player) / 24 GHS/hour (2 players)</option>
+                        <option value="ps4">PS4 - 8 GHS/hour (1 player) / 16 GHS/hour (2 players)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Select Game</label>
+                    <select id="gameSelect">
+                        <option value="Call of Duty">Call of Duty</option>
+                        <option value="Uncharted">Uncharted</option>
+                        <option value="Sekiro">Sekiro</option>
+                        <option value="Mortal Kombat">Mortal Kombat</option>
+                        <option value="God of War">God of War</option>
+                        <option value="Far Cry">Far Cry</option>
+                        <option value="FC 25">FC 25</option>
+                        <option value="FC 26">FC 26</option>
+                        <option value="GTA V">GTA V</option>
+                        <option value="Other">Other (specify at centre)</option>
+                    </select>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label>Number of Players</label>
-                <select id="playerCount" onchange="updatePrice()">
-                    <option value="1">1 Player</option>
-                    <option value="2">2 Players (double price)</option>
-                </select>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Number of Players</label>
+                    <select id="playerCount" onchange="updatePrice()">
+                        <option value="1">1 Player</option>
+                        <option value="2">2 Players (double price)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Duration (hours)</label>
+                    <select id="duration" onchange="updatePrice()">
+                        <option value="1">1 hour</option>
+                        <option value="2">2 hours</option>
+                        <option value="3">3 hours</option>
+                        <option value="4">4 hours</option>
+                    </select>
+                </div>
             </div>
             
-            <div class="form-group"><label>Date & Time</label><input type="datetime-local" id="sessionDateTime" required></div>
-            <div class="form-group">
-                <label>Duration (hours)</label>
-                <select id="duration" onchange="updatePrice()">
-                    <option value="1">1 hour</option>
-                    <option value="2">2 hours</option>
-                    <option value="3">3 hours</option>
-                    <option value="4">4 hours</option>
-                </select>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Select Date</label>
+                    <select id="dateSelect"></select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Select Time</label>
+                    <select id="timeSelect"></select>
+                </div>
             </div>
             
             <div class="price-display" id="priceDisplay">Total: 12 GHS</div>
@@ -407,7 +495,7 @@
     </div>
 </div>
 
-<!-- Admin Dashboard (Hidden) -->
+<!-- Admin Dashboard -->
 <div id="adminSection" style="display: none;">
     <div class="card">
         <div class="admin-header">
@@ -422,7 +510,7 @@
         <div style="overflow-x: auto; margin-top: 20px;">
             <table id="bookingsTable">
                 <thead>
-                    <tr><th>Name</th><th>Mobile</th><th>Email</th><th>Console</th><th>Players</th><th>DateTime</th><th>Hours</th><th>Total Price</th><th>Status</th></tr>
+                    <tr><th>Name</th><th>Mobile</th><th>Email</th><th>Console</th><th>Game</th><th>Players</th><th>Date</th><th>Time</th><th>Hours</th><th>Total</th><th>Status</th></tr>
                 </thead>
                 <tbody id="bookingsTbody"></tbody>
             </table>
@@ -445,14 +533,63 @@
 <footer>© 2025 Zenaa Mega Game Centre — Where Champions Play</footer>
 
 <script>
-    // ========== JSONbin CONFIGURATION ==========
-    // 🔴 REPLACE THESE WITH YOUR JSONBIN CREDENTIALS 🔴
-    const JSONBIN_BIN_ID = "YOUR_BIN_ID";        // Get from jsonbin.io after creating a bin
-    const JSONBIN_API_KEY = "YOUR_API_KEY";      // Get from jsonbin.io → Account → API Keys
+    // ========== JSONbin CONFIGURATION (YOUR CREDENTIALS) ==========
+    const JSONBIN_BIN_ID = "69f37b0d856a6821898f591b";
+    const JSONBIN_API_KEY = "$2a$10$.VP0XiXfoY.gdKmiyFeZs.czh6VBV2JwKI940VAqMhhV1cnsiOEv6";
     
     // ========== GLOBAL VARIABLES ==========
     let bookings = [];
     let isAdminLoggedIn = false;
+    
+    // ========== GENERATE DATE & TIME DROPDOWNS ==========
+    function generateDateOptions() {
+        const dateSelect = document.getElementById('dateSelect');
+        if (!dateSelect) return;
+        
+        const today = new Date();
+        dateSelect.innerHTML = '';
+        
+        for (let i = 0; i < 14; i++) { // Next 14 days
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const dateString = `${year}-${month}-${day}`;
+            
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            const displayDate = date.toLocaleDateString('en-US', options);
+            
+            const option = document.createElement('option');
+            option.value = dateString;
+            option.textContent = displayDate;
+            dateSelect.appendChild(option);
+        }
+    }
+    
+    function generateTimeOptions() {
+        const timeSelect = document.getElementById('timeSelect');
+        if (!timeSelect) return;
+        
+        timeSelect.innerHTML = '';
+        
+        // Opening hours: 10 AM to 12 AM (midnight)
+        const times = [
+            "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00",
+            "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"
+        ];
+        
+        times.forEach(time => {
+            const option = document.createElement('option');
+            option.value = time;
+            let hour = parseInt(time.split(':')[0]);
+            let ampm = hour >= 12 ? 'PM' : 'AM';
+            let displayHour = hour % 12 || 12;
+            option.textContent = `${displayHour}:00 ${ampm}`;
+            timeSelect.appendChild(option);
+        });
+    }
     
     // ========== PRICE CALCULATION ==========
     function updatePrice() {
@@ -479,7 +616,7 @@
             } else {
                 bookings = [];
             }
-            if (document.getElementById('adminSection').style.display !== 'none') {
+            if (document.getElementById('adminSection') && document.getElementById('adminSection').style.display !== 'none') {
                 renderAdminTable();
             }
             return bookings;
@@ -508,37 +645,39 @@
         }
     }
     
-    // ========== CHECK CONFLICT (same console + same datetime) ==========
-    function isSlotTaken(consoleType, datetime, duration) {
-        // Parse duration in hours for conflict detection (same start time = conflict)
-        return bookings.some(b => b.console === consoleType && b.dateTime === datetime);
+    // ========== CHECK CONFLICT ==========
+    function isSlotTaken(consoleType, dateValue, timeValue) {
+        const dateTimeString = `${dateValue} ${timeValue}`;
+        return bookings.some(b => b.console === consoleType && b.date === dateValue && b.time === timeValue);
     }
     
-    // ========== SEND WHATSAPP MESSAGE ==========
-    function sendWhatsAppMessage(name, mobile, email, consoleType, players, datetime, hours, total) {
+    // ========== SEND WHATSAPP ==========
+    function sendWhatsAppMessage(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total) {
         let consoleName = consoleType === 'ps5' ? 'PS5' : 'PS4';
-        let msg = `🎮 *ZENAA BOOKING CONFIRMED* 🎮%0A%0A👤 ${name}%0A📞 ${mobile}%0A📧 ${email}%0A🎮 Console: ${consoleName}%0A👥 Players: ${players}%0A📅 ${datetime}%0A⏱️ ${hours} hour(s)%0A💰 Total: ${total} GHS%0A📍 51 Appiah Street%0A🎉 Payment at centre. See you soon!`;
+        let msg = `🎮 *ZENAA BOOKING CONFIRMED* 🎮%0A%0A👤 ${name}%0A📞 ${mobile}%0A📧 ${email}%0A🎮 Console: ${consoleName}%0A🎮 Game: ${game}%0A👥 Players: ${players}%0A📅 Date: ${dateValue}%0A⏰ Time: ${timeValue}%0A⏱️ ${hours} hour(s)%0A💰 Total: ${total} GHS%0A📍 51 Appiah Street%0A🎉 Payment at centre. See you soon!`;
         let url = `https://wa.me/2330240058049?text=${msg}`;
         window.open(url, '_blank');
     }
     
-    // ========== SEND EMAIL CONFIRMATION ==========
-    function sendEmailConfirmation(name, email, consoleType, players, datetime, hours, total) {
+    // ========== SEND EMAIL ==========
+    function sendEmailConfirmation(name, email, consoleType, game, players, dateValue, timeValue, hours, total) {
         let consoleName = consoleType === 'ps5' ? 'PS5' : 'PS4';
         let subject = `Zenaa Gaming Confirmation - ${name}`;
-        let body = `Hi ${name},\n\nYour gaming session at Zenaa Mega Game Centre is confirmed!\n\nDetails:\nConsole: ${consoleName}\nPlayers: ${players}\nDate & Time: ${datetime}\nDuration: ${hours} hour(s)\nTotal: ${total} GHS\n\nLocation: 51 Appiah Street, Accra\nPayment at centre.\n\nSee you soon!\n\n- Zenaa Team`;
+        let body = `Hi ${name},\n\nYour gaming session at Zenaa Mega Game Centre is confirmed!\n\nDetails:\nConsole: ${consoleName}\nGame: ${game}\nPlayers: ${players}\nDate: ${dateValue}\nTime: ${timeValue}\nDuration: ${hours} hour(s)\nTotal: ${total} GHS\n\nLocation: 51 Appiah Street, Accra\nPayment at centre.\n\nSee you soon!\n\n- Zenaa Team`;
         window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     }
     
     // ========== FINALIZE BOOKING ==========
-    async function finalizeBooking(name, mobile, email, consoleType, players, datetime, hours, total) {
+    async function finalizeBooking(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total) {
         let newBooking = {
             id: Date.now(),
             timestamp: new Date().toISOString(),
             name, mobile, email,
             console: consoleType,
+            game: game,
             players: players,
-            dateTime: datetime,
+            date: dateValue,
+            time: timeValue,
             hours: hours,
             totalPrice: total,
             status: "Confirmed"
@@ -547,13 +686,15 @@
         bookings.push(newBooking);
         await saveBookingsToCloud();
         
-        sendWhatsAppMessage(name, mobile, email, consoleType, players, datetime, hours, total);
-        sendEmailConfirmation(name, email, consoleType, players, datetime, hours, total);
+        sendWhatsAppMessage(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total);
+        sendEmailConfirmation(name, email, consoleType, game, players, dateValue, timeValue, hours, total);
         
         document.getElementById('successAlert').style.display = 'block';
         setTimeout(() => { document.getElementById('successAlert').style.display = 'none'; }, 5000);
         
         document.getElementById('bookingForm').reset();
+        generateDateOptions();
+        generateTimeOptions();
         updatePrice();
         
         if (isAdminLoggedIn) renderAdminTable();
@@ -565,18 +706,20 @@
         let mobile = document.getElementById('mobileNum').value.trim();
         let email = document.getElementById('emailAddr').value.trim();
         let consoleType = document.getElementById('consoleType').value;
+        let game = document.getElementById('gameSelect').value;
         let players = parseInt(document.getElementById('playerCount').value);
-        let datetime = document.getElementById('sessionDateTime').value;
+        let dateValue = document.getElementById('dateSelect').value;
+        let timeValue = document.getElementById('timeSelect').value;
         let hours = parseInt(document.getElementById('duration').value);
         
-        if (!name || !mobile || !email || !datetime) {
+        if (!name || !mobile || !email || !dateValue || !timeValue) {
             alert("Please fill all fields.");
             return;
         }
         
         await loadBookingsFromCloud();
         
-        if (isSlotTaken(consoleType, datetime, hours)) {
+        if (isSlotTaken(consoleType, dateValue, timeValue)) {
             document.getElementById('conflictAlert').style.display = 'block';
             setTimeout(() => { document.getElementById('conflictAlert').style.display = 'none'; }, 3000);
             return;
@@ -587,7 +730,7 @@
         let hourlyRate = (consoleType === 'ps5') ? 12 : 8;
         let total = hourlyRate * players * hours;
         
-        await finalizeBooking(name, mobile, email, consoleType, players, datetime, hours, total);
+        await finalizeBooking(name, mobile, email, consoleType, game, players, dateValue, timeValue, hours, total);
     }
     
     // ========== ADMIN FUNCTIONS ==========
@@ -599,8 +742,10 @@
             let consoleName = b.console === 'ps5' ? 'PS5' : 'PS4';
             let row = `<tr>
                 <td>${b.name}</td><td>${b.mobile}</td><td>${b.email}</td>
-                <td>${consoleName}</td><td>${b.players}</td>
-                <td>${b.dateTime}</td><td>${b.hours}</td>
+                <td>${consoleName}</td><td>${b.game || 'Not specified'}</td>
+                <td>${b.players}</td>
+                <td>${b.date}</td><td>${b.time}</td>
+                <td>${b.hours}</td>
                 <td>${b.totalPrice} GHS</td><td>✅ Booked</td>
             </tr>`;
             tbody.innerHTML += row;
@@ -608,9 +753,9 @@
     }
     
     function exportToExcel() {
-        let wsData = [["Timestamp","Name","Mobile","Email","Console","Players","DateTime","Hours","Total Price"]];
+        let wsData = [["Timestamp","Name","Mobile","Email","Console","Game","Players","Date","Time","Hours","Total Price"]];
         bookings.forEach(b => {
-            wsData.push([b.timestamp, b.name, b.mobile, b.email, b.console, b.players, b.dateTime, b.hours, b.totalPrice]);
+            wsData.push([b.timestamp, b.name, b.mobile, b.email, b.console, b.game || '', b.players, b.date, b.time, b.hours, b.totalPrice]);
         });
         let ws = XLSX.utils.aoa_to_sheet(wsData);
         let wb = XLSX.utils.book_new();
@@ -632,6 +777,7 @@
     let tapTimer = null;
     
     function setupTripleTap(element) {
+        if (!element) return;
         element.addEventListener('click', () => {
             tapCount++;
             if (tapTimer) clearTimeout(tapTimer);
@@ -692,6 +838,12 @@
         if (section === 'booking') document.getElementById('bookingSection').style.display = 'block';
         if (section === 'admin' && isAdminLoggedIn) document.getElementById('adminSection').style.display = 'block';
         if (section === 'contact') document.getElementById('contactSection').style.display = 'block';
+        
+        // Refresh dropdowns when booking section is shown
+        if (section === 'booking') {
+            generateDateOptions();
+            generateTimeOptions();
+        }
     }
     
     // ========== INITIALIZE ==========
@@ -700,6 +852,8 @@
     setupTripleTap(tapElement1);
     setupTripleTap(tapElement2);
     
+    generateDateOptions();
+    generateTimeOptions();
     showSection('home');
     loadBookingsFromCloud();
     updatePrice();
